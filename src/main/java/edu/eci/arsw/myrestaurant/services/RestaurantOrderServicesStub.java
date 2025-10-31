@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class RestaurantOrderServicesStub implements RestaurantOrderServices {
 
     @Autowired
-    @Qualifier("basicBillCalculator")
+    @Qualifier("billWithTaxesCalculator")
     private BillCalculator calc;
 
     private static final Map<String, RestaurantProduct> productsMap;

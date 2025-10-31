@@ -99,11 +99,6 @@ Abrir `http://localhost:8080/orders` en el navegador y verificar la respuesta JS
 <img src="assets/images/browser_test.png" alt="Browser Test" width="50%">
 
 ### Paso 6 (BONO): Verificación de Inyección de Dependencias
-Confirmar en los logs que Spring haya creado los beans correctamente:
-
-- `basicBillCalculator`
-- `billWithTaxesCalculator`
-- `restaurantOrderServicesStub`
 
 ## Implementación del Bono
 
@@ -112,3 +107,7 @@ Se implementó correctamente la inyección de dependencias usando:
 - `@Service` en `BillWithTaxesCalculator`
 - `@Autowired` + `@Qualifier("basicBillCalculator")` en `RestaurantOrderServicesStub`
 - `BillWithTaxesCalculator` utiliza internamente `StandardTaxesCalculator`
+
+Pruebas con `billWithTaxesCalculator` IVA 16%:
+
+<img src="assets/images/with_taxes_test.png" alt="Browser Test" width="50%">
