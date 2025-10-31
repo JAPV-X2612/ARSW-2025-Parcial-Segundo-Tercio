@@ -1,58 +1,114 @@
-# Escuela Colombiana de Ingeniería
+# Solución Parcial Segundo Corte - API REST para Cálculo de Cuentas de Restaurante
 
-## Arquitecturas de Software
+## Autor
 
-### Parcial segundo corte para el cálculo de cuentas de restaurantes.
+* Jesús Pinzón
 
-#### Descripción
+## Descripción
 
-En este proyecto se va a construír un API REST que permita calcular el valor total de una cuenta de restaurante, teniendo en cuenta las políticas y regímenes tributarios configurados para la misma.
+API REST desarrollada con Spring Boot para calcular el valor total de cuentas de restaurante, considerando diferentes políticas tributarias mediante el uso de inyección de dependencias y el principio de inversión de dependencias.
 
-Este API será soportado por el siguiente modelo de clases, el cual considera el principio de inversión de dependencias, y asume el uso de Inyección de dependencias:
+## Arquitectura
 
-<img source="assets/images/class-diagram.png" width="60%">
-![](assets/images/class-diagram.png)
+El sistema implementa diferentes estrategias de cálculo:
 
-El anterior modelo considera, por ahora, los siguientes casos (la aplicación podrá configurarse de acuerdo con el restaurante donde sea usado):
+- **BasicBillCalculator**: Calcula cuentas sin impuestos
+- **BillWithTaxesCalculator**: Calcula cuentas aplicando impuestos según el tipo de producto
+- **StandardTaxesCalculator**: Aplica IVA estándar del 16% a todos los productos
 
-* En algunos restaurantes -ilegales- los precios de los platos NO tienen gravamen alguno (BasicBillCalculator).
-* En muchos otros se cobra el IVA, pero de dos maneras diferentes:
-	* 16% estándar sobre todos los productos (CalcularodCuentaConIVA + VerificadorIVAEstandar).
-	* Con la reforma tributaria de 2016, aplicando un IVA diferencial al tipo de producto: 16% para las bebidas y 19% para los platos.
+## Requisitos
 
+- Java 17 o superior
+- Maven 3.6+
+- Spring Boot 2.7.18
 
-Por defecto, el manejador de órdenes tiene dos órdenes registradas para las mesas #1 y #3:
+## Instalación y Ejecución
 
+### 1. Clonar el repositorio
+```bash
+git clone 
+cd ARSW-2025-Parcial-Segundo-Tercio
+```
 
-* Orden Mesa 1:
+### 2. Compilar el proyecto
+```bash
+mvn clean install
+```
 
-	| Producto      | Cantidad | Precio Unitario          | 
-	| ------------- | ----- |:-------------:| 
-	|PIZZA|3|$10000|
-	|HOTDOG|1|$3000|
-	|COKE|4|$1300|
+### 3. Ejecutar la aplicación
+```bash
+mvn spring-boot:run
+```
 
+La aplicación estará disponible en `http://localhost:8080`
 
-* Orden Mesa 3:
+## Funcionalidad Implementada
 
-	| Producto      | Cantidad | Precio  Unitario         | 
-	| ------------- | ----- |:-------------:| 
-	|HAMBURGER|2|$12300|
-	|COKE|2|$1300|
+### Endpoint GET /orders
 
+Retorna todas las órdenes del restaurante con sus productos, cantidades y el total calculado.
 
+**URL:** `GET http://localhost:8080/orders`
 
+**Respuesta esperada:**
+```json
+{
+  "1": {
+    "total": 38200,
+    "orderAmountsMap": {
+      "PIZZA": 3,
+      "HOTDOG": 1,
+      "COKE": 4
+    },
+    "tableNumber": 1
+  },
+  "3": {
+    "total": 27200,
+    "orderAmountsMap": {
+      "HAMBURGER": 2,
+      "COKE": 2
+    },
+    "tableNumber": 3
+  }
+}
+```
 
-### Ejercicio
+## Pruebas de Funcionamiento
 
-1. Configure su aplicación para que ofrezca el recurso "/orders", para esto:
-   * Modifique la clase OrdersAPIController para que exponda el servicio REST necesario por medio de SpringMVC/SpringBoot.
-2. Configure su aplicación para que al realizar una petición GET, retorne -en formato jSON- el conjunto de todas las órdenes y sus totales, es decir, tiene que retornar el listado de todos los productos por Orden y un campo en donde aparezca el valor total de la cuenta.
-	
-	* Importante, para el calculo del total de cada orden debe utilizar la clase "edu.eci.arsw.myrestaurant.beans.impl.BasicBillCalculator" 
+### Paso 1: Compilación Exitosa
+Ejecutar `mvn clean install` y verificar que el build sea exitoso.
 
+### Paso 2: Aplicación Corriendo
+Ejecutar `mvn spring-boot:run` y confirmar que la aplicación inicie correctamente en el puerto 8080.
 
-### Bono
+### Paso 3: Prueba del Endpoint con cURL
+Ejecutar en terminal:
+```bash
+curl -X GET http://localhost:8080/orders
+```
 
-Haga que a la aplicación se le inyecte el bean BasicBillCalculator y BillWithTaxesCalculator. Para esto utilice el principio de los Beans revisados en laboratorios anteriores y realice la inyección de dependencias entre éstos mediante las anotaciones @Autowired y @Service.
-* Nota:  Tiene que hacer que la clase "BillWithTaxesCalculator" utilice a "edu.eci.arsw.myrestaurant.beans.impl.colombia.StandardTaxesCalculator" para realizar su calculo, no es necesario que se inyecte.
+**Captura:** `curl_test.png`
+
+<img src="assets/images/curl_test.png" alt="cURL Test" width="70%">
+
+### Paso 4: Prueba desde Navegador
+Abrir `http://localhost:8080/orders` en el navegador y verificar la respuesta JSON.
+
+**Captura:** `browser_test.png`
+
+<img src="assets/images/browser_test.png" alt="Browser Test" width="50%">
+
+### Paso 6 (BONO): Verificación de Inyección de Dependencias
+Confirmar en los logs que Spring haya creado los beans correctamente:
+
+- `basicBillCalculator`
+- `billWithTaxesCalculator`
+- `restaurantOrderServicesStub`
+
+## Implementación del Bono
+
+Se implementó correctamente la inyección de dependencias usando:
+- `@Service` en `BasicBillCalculator`
+- `@Service` en `BillWithTaxesCalculator`
+- `@Autowired` + `@Qualifier("basicBillCalculator")` en `RestaurantOrderServicesStub`
+- `BillWithTaxesCalculator` utiliza internamente `StandardTaxesCalculator`
