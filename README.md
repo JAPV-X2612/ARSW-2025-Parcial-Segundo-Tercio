@@ -1,18 +1,16 @@
+# Escuela Colombiana de Ingeniería
 
-### Escuela Colombiana de Ingeniería
+## Arquitecturas de Software
 
-### Arquitecturas de Software
+### Parcial segundo corte para el cálculo de cuentas de restaurantes.
 
-## Parcial segundo corte para el cálculo de cuentas de restaurantes.
-
-### Descripción
+#### Descripción
 
 En este proyecto se va a construír un API REST que permita calcular el valor total de una cuenta de restaurante, teniendo en cuenta las políticas y regímenes tributarios configurados para la misma.
 
 Este API será soportado por el siguiente modelo de clases, el cual considera el principio de inversión de dependencias, y asume el uso de Inyección de dependencias:
 
-![](img/ClassDiagram.png)
-
+![](assets/images/ClassDiagram.png)
 
 El anterior modelo considera, por ahora, los siguientes casos (la aplicación podrá configurarse de acuerdo con el restaurante donde sea usado):
 
