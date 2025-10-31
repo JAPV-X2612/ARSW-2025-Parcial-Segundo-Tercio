@@ -10,7 +10,8 @@ En este proyecto se va a construír un API REST que permita calcular el valor to
 
 Este API será soportado por el siguiente modelo de clases, el cual considera el principio de inversión de dependencias, y asume el uso de Inyección de dependencias:
 
-![](assets/images/ClassDiagram.png)
+<img source="assets/images/class-diagram.png" width="60%">
+![](assets/images/class-diagram.png)
 
 El anterior modelo considera, por ahora, los siguientes casos (la aplicación podrá configurarse de acuerdo con el restaurante donde sea usado):
 
