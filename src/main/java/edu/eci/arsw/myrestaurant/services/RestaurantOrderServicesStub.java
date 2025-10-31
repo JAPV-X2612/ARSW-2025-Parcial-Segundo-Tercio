@@ -1,10 +1,10 @@
 package edu.eci.arsw.myrestaurant.services;
-
-
-import edu.eci.arsw.myrestaurant.model.Order;
-import edu.eci.arsw.myrestaurant.model.RestaurantProduct;
 import edu.eci.arsw.myrestaurant.beans.BillCalculator;
+
+import edu.eci.arsw.myrestaurant.beans.BillCalculator;
+import edu.eci.arsw.myrestaurant.model.Order;
 import edu.eci.arsw.myrestaurant.model.ProductType;
+import edu.eci.arsw.myrestaurant.model.RestaurantProduct;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,14 +12,52 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RestaurantOrderServicesStub implements RestaurantOrderServices {
 
-    
-    BillCalculator calc = null;
+    private BillCalculator calc;
+    private final Map<Integer, Order> orders = new ConcurrentHashMap<>();
+    private final Map<String, RestaurantProduct> products = new ConcurrentHashMap<>();
+    private final BasicBillCalculator billCalculator = new BasicBillCalculator();
+    private static final Map<String, RestaurantProduct> productsMap;
+    private static final Map<Integer, Order> tableOrders;
 
     public RestaurantOrderServicesStub() {
+        // Inicializar productos
+        products.put("PIZZA", new RestaurantProduct("PIZZA", 10000));
+        products.put("HOTDOG", new RestaurantProduct("HOTDOG", 3000));
+        products.put("COKE", new RestaurantProduct("COKE", 1300));
+        products.put("HAMBURGER", new RestaurantProduct("HAMBURGER", 12300));
+
+        // Inicializar órdenes
+        Order order1 = new Order(1);
+        order1.addDish("PIZZA", 3);
+        order1.addDish("HOTDOG", 1);
+        order1.addDish("COKE", 4);
+
+        Order order3 = new Order(3);
+        order3.addDish("HAMBURGER", 2);
+        order3.addDish("COKE", 2);
+
+        orders.put(1, order1);
+        orders.put(3, order3);
     }
 
     public void setBillCalculator(BillCalculator calc) {
         this.calc = calc;
+    }
+
+    public Map<Integer, Map<String, Object>> getOrders() {
+        Map<Integer, Map<String, Object>> result = new ConcurrentHashMap<>();
+        for (Map.Entry<Integer, Order> entry : orders.entrySet()) {
+            int tableId = entry.getKey();
+            Order order = entry.getValue();
+            int total = billCalculator.calculateBill(order, products);
+
+            Map<String, Object> orderDetails = new ConcurrentHashMap<>();
+            orderDetails.put("products", order.getOrderedDishes());
+            orderDetails.put("total", total);
+
+            result.put(tableId, orderDetails);
+        }
+        return result;
     }
 
     @Override
@@ -78,12 +116,7 @@ public class RestaurantOrderServicesStub implements RestaurantOrderServices {
         } else {
             return calc.calculateBill(tableOrders.get(tableNumber), productsMap);
         }
-    }
-
-    private static final Map<String, RestaurantProduct> productsMap;
-
-    private static final Map<Integer, Order> tableOrders;
-    
+    }    
 
     static {
         productsMap = new ConcurrentHashMap<>();
